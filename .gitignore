@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# OpenClaw runtime data
+openclaw-config/*.json
+!openclaw-config/openclaw.json
+openclaw-config/logs/
+openclaw-config/memory/
+openclaw-config/canvas/
+
+# Workspace data (optional - uncomment if you don't want to commit workspace)
+# openclaw-workspace/*
+
+# Docker
+.dockerignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

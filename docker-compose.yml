@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  openclaw-gateway:
+    image: openclaw-gateway:latest
+    # Uncomment below to build from local Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: openclaw-gateway
+    ports:
+      - "18790:18789"
+      - "18892:18792"
+    volumes:
+      - ./openclaw-config:/home/node/.openclaw
+      - ./openclaw-workspace:/home/node/.openclaw/workspace
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_GATEWAY_PORT=18789
+      - OPENCLAW_GATEWAY_BIND=0.0.0.0
+      - OPENCLAW_CONFIG_PATH=/home/node/.openclaw/openclaw.json
+      - OPENCLAW_STATE_DIR=/home/node/.openclaw
+      # Replace with your actual Bailian API key
+      - BAILIAN_API_KEY=${BAILIAN_API_KEY:-sk-sp-4bca89327b424fffbc0e28c7d4fdfcf8}
+    restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:18789/__openclaw__/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

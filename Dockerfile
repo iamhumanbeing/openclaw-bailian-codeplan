@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
+# Set working directory
 WORKDIR /home/node
 
-# Create openclaw user
-RUN groupadd -r node && useradd -r -g node -m -d /home/node node
+# Ensure node user owns the directory
+RUN chown -R node:node /home/node
 
 # Install OpenClaw globally from npm
 RUN npm install -g openclaw@latest --registry https://registry.npmjs.org/

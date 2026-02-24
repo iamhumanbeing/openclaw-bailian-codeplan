@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+LICENSE
+
+# Environment
+.env
+.env.example
+
+# Scripts
+deploy.sh
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# OpenClaw runtime (will be mounted as volumes)
+openclaw-workspace/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

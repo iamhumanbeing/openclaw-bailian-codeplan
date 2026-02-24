@@ -2,11 +2,10 @@ version: '3.8'
 
 services:
   openclaw-gateway:
-    image: openclaw-gateway:latest
-    # Uncomment below to build from local Dockerfile
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_OWNER:-yourusername}/openclaw-bailian-feishu:latest
     container_name: openclaw-gateway
     ports:
       - "18790:18789"
@@ -20,8 +19,11 @@ services:
       - OPENCLAW_GATEWAY_BIND=0.0.0.0
       - OPENCLAW_CONFIG_PATH=/home/node/.openclaw/openclaw.json
       - OPENCLAW_STATE_DIR=/home/node/.openclaw
-      # Replace with your actual Bailian API key
-      - BAILIAN_API_KEY=${BAILIAN_API_KEY:-sk-sp-4bca89327b424fffbc0e28c7d4fdfcf8}
+      # Bailian API Configuration
+      - BAILIAN_API_KEY=${BAILIAN_API_KEY}
+      # Feishu (Lark) Bot Configuration
+      - FEISHU_APP_ID=${FEISHU_APP_ID}
+      - FEISHU_APP_SECRET=${FEISHU_APP_SECRET}
     restart: unless-stopped
     dns:
       - 8.8.8.8
@@ -31,4 +33,4 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s

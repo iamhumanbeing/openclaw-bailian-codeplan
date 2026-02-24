@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# OpenClaw Docker Deployment Script for Bailian Code Plan
+# OpenClaw Docker Deployment Script with Bailian & Feishu Support
 
 set -e
 
@@ -15,8 +15,10 @@ if [ ! -f .env ]; then
     echo "Creating .env from template..."
     cp .env.example .env
     echo ""
-    echo "📝 Please edit .env and add your Bailian API key:"
-    echo "   BAILIAN_API_KEY=sk-your-actual-api-key-here"
+    echo "📝 Please edit .env and add your credentials:"
+    echo "   BAILIAN_API_KEY=sk-your-bailian-api-key"
+    echo "   FEISHU_APP_ID=cli-your-feishu-app-id"
+    echo "   FEISHU_APP_SECRET=your-feishu-app-secret"
     echo ""
     exit 1
 fi
@@ -24,14 +26,19 @@ fi
 # Load environment variables
 source .env
 
-# Check if API key is set
-if [ -z "$BAILIAN_API_KEY" ] || [ "$BAILIAN_API_KEY" = "sk-your-api-key-here" ]; then
+# Check if required variables are set
+if [ -z "$BAILIAN_API_KEY" ] || [ "$BAILIAN_API_KEY" = "sk-your-bailian-api-key-here" ]; then
     echo "❌ BAILIAN_API_KEY is not set in .env file!"
     echo ""
-    echo "Please edit .env and add your Bailian API key:"
-    echo "   BAILIAN_API_KEY=sk-your-actual-api-key-here"
+    echo "Please edit .env and add your Bailian API key."
     echo ""
     exit 1
+fi
+
+if [ -z "$FEISHU_APP_ID" ] || [ "$FEISHU_APP_ID" = "cli-your-feishu-app-id" ]; then
+    echo "⚠️  FEISHU_APP_ID is not set in .env file!"
+    echo "   Feishu integration will be disabled."
+    echo ""
 fi
 
 echo "✅ Environment configured"
@@ -45,7 +52,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
     echo "❌ Docker Compose is not installed!"
     echo "Please install Docker Compose: https://docs.docker.com/compose/install/"
     exit 1
@@ -54,23 +61,22 @@ fi
 echo "✅ Docker and Docker Compose are installed"
 echo ""
 
-# Pull latest image
-echo "📥 Pulling latest OpenClaw image..."
-docker pull openclaw-gateway:latest 2>/dev/null || echo "Using local image..."
-echo ""
-
 # Create necessary directories
 echo "📁 Creating directories..."
 mkdir -p openclaw-workspace/workspace
 echo ""
 
-# Start services
-echo "🚀 Starting OpenClaw services..."
-docker-compose up -d
+# Build and start services
+echo "🚀 Building and starting OpenClaw services..."
+if command -v docker-compose &> /dev/null; then
+    docker-compose up -d --build
+else
+    docker compose up -d --build
+fi
 
 echo ""
 echo "⏳ Waiting for OpenClaw to be ready..."
-sleep 5
+sleep 10
 
 # Check if container is running
 if docker ps | grep -q openclaw-gateway; then
@@ -81,7 +87,12 @@ if docker ps | grep -q openclaw-gateway; then
     echo "   Local:   http://localhost:18790/"
     echo "   Network: http://$(hostname -I | awk '{print $1}'):18790/"
     echo ""
-    echo "🛠️  Default Model: qwen3.5-plus (1M context)"
+    echo "🤖 Default Model: qwen3.5-plus (1M context)"
+    if [ -n "$FEISHU_APP_ID" ] && [ "$FEISHU_APP_ID" != "cli-your-feishu-app-id" ]; then
+        echo "💬 Feishu Bot: Enabled"
+    else
+        echo "💬 Feishu Bot: Disabled (configure FEISHU_APP_ID to enable)"
+    fi
     echo ""
     echo "📊 View logs:"
     echo "   docker-compose logs -f"
@@ -93,6 +104,10 @@ else
     echo "❌ OpenClaw failed to start!"
     echo ""
     echo "📋 Check logs:"
-    echo "   docker-compose logs"
+    if command -v docker-compose &> /dev/null; then
+        echo "   docker-compose logs"
+    else
+        echo "   docker compose logs"
+    fi
     exit 1
 fi

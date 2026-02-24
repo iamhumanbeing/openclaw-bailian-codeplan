@@ -7,9 +7,12 @@ openclaw-config/*.json
 openclaw-config/logs/
 openclaw-config/memory/
 openclaw-config/canvas/
+openclaw-config/cron/
+openclaw-config/devices/
 
 # Workspace data (optional - uncomment if you don't want to commit workspace)
-# openclaw-workspace/*
+openclaw-workspace/*
+!openclaw-workspace/.gitkeep
 
 # Docker
 .dockerignore

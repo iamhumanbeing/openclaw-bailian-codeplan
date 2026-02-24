@@ -1,10 +1,12 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.21-2",
-    "lastTouchedAt": "2026-02-24T09:30:00.000Z"
+    "lastTouchedAt": "2026-02-24T12:00:00.000Z"
   },
   "env": {
-    "BAILIAN_API_KEY": "sk-sp-4bca89327b424fffbc0e28c7d4fdfcf8"
+    "BAILIAN_API_KEY": "${BAILIAN_API_KEY}",
+    "FEISHU_APP_ID": "${FEISHU_APP_ID}",
+    "FEISHU_APP_SECRET": "${FEISHU_APP_SECRET}"
   },
   "models": {
     "mode": "merge",
@@ -121,12 +123,25 @@
       }
     }
   },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "appId": "${FEISHU_APP_ID}",
+      "appSecret": "${FEISHU_APP_SECRET}",
+      "encryptKey": "",
+      "verificationToken": "",
+      "eventSubscription": {
+        "url": "",
+        "method": "POST"
+      }
+    }
+  },
   "browser": {
     "enabled": true,
     "defaultProfile": "chrome",
     "profiles": {
       "chrome": {
-        "cdpUrl": "http://127.0.0.1:18892",
+        "cdpUrl": "http://127.0.0.1:18792",
         "color": "#4285F4"
       }
     }
@@ -147,7 +162,7 @@
     },
     "auth": {
       "mode": "token",
-      "token": "c006f7d3a2761f13548cc6ed9b0727b1f93d9f1480f8ce21"
+      "token": "auto-generated-on-first-run"
     }
   }
 }
